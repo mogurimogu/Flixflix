@@ -1,0 +1,11 @@
+.search-bar {
+  border-radius: 999em;
+  padding: 10px 15px;
+  border: none;
+  box-shadow: 2px 2px 5px #00000035;
+  width: 100%;
+}
+
+.search-bar:focus {
+  outline: 3px solid rgba(255, 0, 0, 0.5);
+}

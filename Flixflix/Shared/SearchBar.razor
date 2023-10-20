@@ -1,0 +1,21 @@
+<input type="text" @bind="inputValue" @oninput="OnInput" class="search-bar" placeholder="Buscar 📺" />
+
+@code {
+    private string inputValue = "";
+    private Timer debounceTimer;
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        inputValue = e.Value.ToString();
+        if (debounceTimer != null)
+        {
+            debounceTimer.Dispose();
+        }
+        debounceTimer = new Timer(HandleSearch, null, 400, Timeout.Infinite);
+    }
+
+    private void HandleSearch(object state)
+    {
+        Console.WriteLine(inputValue);
+    }
+}

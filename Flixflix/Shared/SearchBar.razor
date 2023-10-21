@@ -1,4 +1,15 @@
-<input type="text" @bind="inputValue" @oninput="OnInput" class="search-bar" placeholder="Buscar 📺" />
+@using System;
+@using System.Text.Json;
+@inject theMovieDb theMovieDb;
+
+<input type="text" @bind="inputValue" @oninput="OnInput" class="search-bar mb-3" placeholder="Buscar 📺" />
+
+@if (inputValue.Length > 0)
+{
+    <div class="text-secondary px-3 mb-3">
+        Resultados de búsqueda para: <span class="fw-bold">@inputValue</span>
+    </div>
+}
 
 @code {
     private string inputValue = "";
@@ -14,8 +25,8 @@
         debounceTimer = new Timer(HandleSearch, null, 400, Timeout.Infinite);
     }
 
-    private void HandleSearch(object state)
+    private async void HandleSearch(object state)
     {
-        Console.WriteLine(inputValue);
+        await theMovieDb.SearchMoviesAsync(inputValue);
     }
 }

@@ -1,11 +1,44 @@
 ﻿@page "/"
+@inject theMovieDb theMovieDb;
 
-<PageTitle>Index</PageTitle>
+<main class="container-lg">
+    <div class="row">
+        <h1 class="text-center text-uppercase main-title">
+            FlixFlix
+        </h1>
+        <h2 class="text-secondary fs-4 text-center mb-4">
+            Busca, comenta y puntua tus películas favoritas
+        </h2>
+    </div>
+    <SearchBar />
 
-<h1>Hello, world!</h1>
+    @if (theMovieDb.MoviesList != null)
+    {
+        if (theMovieDb.MoviesList.results != null)
+        {
+            <ul>
+                @foreach (var movie in theMovieDb.MoviesList.results)
+                {
+                    <li>@movie.title</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <span>No hubo suerte</span>
+        }
+    }
+</main>
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        theMovieDb.MoviesListChanged += OnMoviesListChanged;
+    }
 
-<SearchBar />
+    private void OnMoviesListChanged(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}

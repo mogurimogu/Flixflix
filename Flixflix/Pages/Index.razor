@@ -1,5 +1,4 @@
 ﻿@page "/"
-@inject theMovieDb theMovieDb;
 
 <main class="container-lg">
     <div class="row">
@@ -11,34 +10,5 @@
         </h2>
     </div>
     <SearchBar />
-
-    @if (theMovieDb.MoviesList != null)
-    {
-        if (theMovieDb.MoviesList.results != null)
-        {
-            <ul>
-                @foreach (var movie in theMovieDb.MoviesList.results)
-                {
-                    <li>@movie.title</li>
-                }
-            </ul>
-        }
-        else
-        {
-            <span>No hubo suerte</span>
-        }
-    }
+    <MovieGrid />
 </main>
-
-
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        theMovieDb.MoviesListChanged += OnMoviesListChanged;
-    }
-
-    private void OnMoviesListChanged(object sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
-}

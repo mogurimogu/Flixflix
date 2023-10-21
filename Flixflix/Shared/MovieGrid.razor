@@ -1,0 +1,50 @@
+@inject theMovieDb theMovieDb;
+
+@if (theMovieDb.errorMessage != null)
+{
+    <div class="alert alert-alert" role="alert">
+        theMovieDb.errorMessage
+    </div>
+}
+
+@if (theMovieDb.isLoading)
+{
+    <div class="alert alert-info" role="alert">
+        Loading...
+    </div>
+}
+else if (theMovieDb.MoviesList != null)
+{
+    if (theMovieDb.MoviesList.results.Count > 0)
+    {
+        <ul class="movies-grid px-3">
+            @foreach (var movie in theMovieDb.MoviesList.results)
+            {
+                <li>
+                    <a class="card text-bg-dark">
+                        <img src="@($"https://image.tmdb.org/t/p/original{movie.poster_path}")" class="card-img" alt="@movie.title">
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class=" alert alert-warning" role="alert">
+            No hubo resultados para esta búsqueda.
+        </div>
+    }
+}
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        theMovieDb.MoviesListChanged += OnMoviesListChanged;
+    }
+
+    private void OnMoviesListChanged(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}

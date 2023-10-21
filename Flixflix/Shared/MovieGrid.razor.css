@@ -1,0 +1,19 @@
+.movies-grid {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em 1em;
+}
+
+@media (min-width: 720px) {
+  .movies-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: 1080px) {
+  .movies-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}

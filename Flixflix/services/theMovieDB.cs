@@ -8,6 +8,8 @@ public class theMovieDb
 {
     public event EventHandler MoviesListChanged;
 
+    public bool isLoading { get; set; }
+    public string errorMessage { get; set; }
     public Movies MoviesList { get; set; }
     private readonly HttpClient httpClient;
     private const string apiKey = "8f781d70654b5a6f2fa69770d1d115a3";
@@ -44,25 +46,43 @@ public class theMovieDb
 
     public async Task SearchMoviesAsync(string query)
     {
-        try
+        if (query.Length > 0)
         {
-            string apiUrl = $"https://api.themoviedb.org/3/search/movie?api_key={apiKey}&query={query}";
-            var response = await httpClient.GetAsync(apiUrl);
 
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var content = await response.Content.ReadAsStringAsync();
-                MoviesList = JsonSerializer.Deserialize<Movies>(content);
+                isLoading = true;
+                string apiUrl = $"https://api.themoviedb.org/3/search/movie?api_key={apiKey}&query={query}";
+                var response = await httpClient.GetAsync(apiUrl);
                 MoviesListChanged?.Invoke(this, EventArgs.Empty);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    MoviesList = JsonSerializer.Deserialize<Movies>(content);
+                    isLoading = false;
+                    errorMessage = null;
+                    MoviesListChanged?.Invoke(this, EventArgs.Empty);
+                }
+                else
+                {
+                    throw new ApplicationException($"Error status {response.StatusCode}: {response.ReasonPhrase}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // Handle the error
+                errorMessage = ex.Message;
+                isLoading = false;
+                MoviesListChanged?.Invoke(this, EventArgs.Empty);
+                Console.Error.WriteLine($"{ex.Message}");
             }
         }
-        catch (Exception ex)
+        else
         {
-            // Handle exceptions
+            MoviesList = null;
+            isLoading = false;
+            errorMessage = null;
+            MoviesListChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

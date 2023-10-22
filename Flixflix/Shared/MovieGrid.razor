@@ -2,9 +2,10 @@
 
 @if (theMovieDb.errorMessage != null)
 {
-    <div class="alert alert-alert" role="alert">
-        theMovieDb.errorMessage
+    <div class="alert alert-danger" role="alert">
+        @theMovieDb.errorMessage
     </div>
+
 }
 
 @if (theMovieDb.isLoading)
@@ -21,9 +22,7 @@ else if (theMovieDb.MoviesList != null)
             @foreach (var movie in theMovieDb.MoviesList.results)
             {
                 <li>
-                    <a class="card text-bg-dark">
-                        <img src="@($"https://image.tmdb.org/t/p/original{movie.poster_path}")" class="card-img" alt="@movie.title">
-                    </a>
+                    <MovieCard movie="@movie" />
                 </li>
             }
         </ul>
@@ -38,6 +37,7 @@ else if (theMovieDb.MoviesList != null)
 
 
 @code {
+
     protected override async Task OnInitializedAsync()
     {
         theMovieDb.MoviesListChanged += OnMoviesListChanged;

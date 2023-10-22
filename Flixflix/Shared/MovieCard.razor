@@ -1,0 +1,23 @@
+@using System;
+@inject theMovieDb theMovieDb
+
+<article class="h-100">
+    <a class="card text-bg-dark h-100 text-center justify-content-center text-white undrx movie-link"
+       href="/movie/details/@movie.id"
+       style="background-color: rgb(@random.Next(255),@random.Next(255),@random.Next(255)) ;">
+        @if (!string.IsNullOrEmpty(movie.poster_path))
+        {
+            <img src="@($"https://image.tmdb.org/t/p/original{movie.poster_path}")" class="card-img" alt="@movie.title">
+        }
+        else
+        {
+            <div class="fs-1 p-3">@movie.title</div>
+        }
+    </a>
+</article>
+
+@code {
+    private Random random = new Random();
+    [Parameter]
+    public theMovieDb.Result movie { get; set; }
+}

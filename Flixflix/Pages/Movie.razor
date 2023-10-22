@@ -8,10 +8,25 @@
     @if (movie != null)
     {
         <article class="movie-info-card row">
-            <div class="col-12 mb-3">
-                <button class="btn btn-dark" @onclick="goHome">
-                    <span class="oi oi-home" aria-hidden="true"></span> Inicio
-                </button>
+            <div class="mb-3 d-flex justify-content-between">
+                <div>
+                    <button class="btn btn-dark" @onclick="goHome">
+                        <span class="oi oi-home" aria-hidden="true"></span> Inicio
+                    </button>
+                </div>
+                <div>
+                <div class="btn-group">
+                    <button class="btn btn-dark">
+                        <span class="oi oi-thumb-down" aria-hidden="true"></span>
+                    </button>
+                    <button class="btn btn-dark">
+                        <span class="oi oi-thumb-up" aria-hidden="true"></span>
+                    </button>
+                </div>
+                    <button class="btn btn-dark">
+                        <span class="oi oi-heart" aria-hidden="true"></span>
+                    </button>
+                </div>
             </div>
             <div class="col-5">
                 <img src="@($"https://image.tmdb.org/t/p/original{movie.poster_path}")" class="card-img" alt="@movie.title">

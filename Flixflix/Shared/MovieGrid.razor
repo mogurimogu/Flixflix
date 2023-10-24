@@ -1,25 +1,25 @@
 @inject theMovieDb theMovieDb;
 
-@if (theMovieDb.errorMessage != null)
+@if (errorMessage != null)
 {
     <div class="alert alert-danger" role="alert">
-        @theMovieDb.errorMessage
+        @errorMessage
     </div>
 
 }
 
-@if (theMovieDb.isLoading)
+@if (isLoading)
 {
     <div class="alert alert-info" role="alert">
         Loading...
     </div>
 }
-else if (theMovieDb.MoviesList != null)
+else if (movieList != null)
 {
-    if (theMovieDb.MoviesList.results.Count > 0)
+    if (movieList.results.Count > 0)
     {
         <ul class="movies-grid px-3">
-            @foreach (var movie in theMovieDb.MoviesList.results)
+            @foreach (var movie in movieList.results)
             {
                 <li>
                     <MovieCard movie="@movie" />
@@ -37,14 +37,10 @@ else if (theMovieDb.MoviesList != null)
 
 
 @code {
-
-    protected override async Task OnInitializedAsync()
-    {
-        theMovieDb.MoviesListChanged += OnMoviesListChanged;
-    }
-
-    private void OnMoviesListChanged(object sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
+    [Parameter]
+    public theMovieDb.Movies? movieList { get; set; }
+    [ParameterAttribute]
+    public bool isLoading { get; set; }
+    [Parameter]
+    public string? errorMessage { get; set; }
 }

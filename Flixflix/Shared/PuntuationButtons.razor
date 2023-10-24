@@ -1,0 +1,25 @@
+﻿<div class="btn-group">
+    <button class="btn btn-dark opacity-50" @onclick="() => HandleClick(Dislike)">
+        <span class="oi oi-thumb-down" aria-hidden="true"></span>
+    </button>
+    <button class="btn btn-dark opacity-50" @onclick="() => HandleClick(Like)">
+        <span class="oi oi-thumb-up" aria-hidden="true"></span>
+    </button>
+</div>
+<button class="btn btn-dark opacity-50" @onclick="() => HandleClick(Watched)">
+    <span class="oi oi-eye" aria-hidden="true"></span>
+</button>
+
+@code {
+    private string Like = "like";
+    private string Dislike = "dislike";
+    private string Watched = "watched";
+
+    private Task HandleClick(string e) => HandleValoration.InvokeAsync(e);
+
+    [Parameter]
+    public theMovieDb.Result movie { get; set; }
+
+    [Parameter]
+    public EventCallback<string> HandleValoration { get; set; }
+}

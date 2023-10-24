@@ -1,50 +1,43 @@
 ﻿@page "/movie/details/{id}"
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject IJSRuntime JS
 @inject theMovieDb theMovieDb
 @layout MovieLayout
 
-<main class="movie-bg" style="background-image: url(@($"https://image.tmdb.org/t/p/original{movie.backdrop_path}"))">
+<main class="movie-bg"
+      style="background-image: url(@($"https://image.tmdb.org/t/p/original{movie.backdrop_path}"));
+      background-color: rgb(@random.Next(255), @random.Next(255), @random.Next(255)) ">
     <div class="overlay p-3 container">
-    @if (movie != null)
-    {
-        <article class="movie-info-card row">
-            <div class="mb-3 d-flex justify-content-between">
-                <div>
-                    <button class="btn btn-dark" @onclick="goHome">
-                        <span class="oi oi-home" aria-hidden="true"></span> Inicio
-                    </button>
+        @if (movie != null)
+        {
+            <article class="movie-info-card row">
+                <div class="mb-3 d-flex justify-content-between">
+                    <div>
+                        <button class="btn btn-dark" @onclick="goHome">
+                            <span class="oi oi-home" aria-hidden="true"></span> Inicio
+                        </button>
+                    </div>
+                    <div>
+                        <PuntuationButtons movie="movie" HandleValoration="HandleValoration" />
+                    </div>
                 </div>
-                <div>
-                <div class="btn-group">
-                    <button class="btn btn-dark">
-                        <span class="oi oi-thumb-down" aria-hidden="true"></span>
-                    </button>
-                    <button class="btn btn-dark">
-                        <span class="oi oi-thumb-up" aria-hidden="true"></span>
-                    </button>
+                <div class="col-md-5 mb-3">
+                    <img src="@($"https://image.tmdb.org/t/p/original{movie.poster_path}")" class="card-img" alt="@movie.title">
                 </div>
-                    <button class="btn btn-dark">
-                        <span class="oi oi-heart" aria-hidden="true"></span>
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-5 mb-3">
-                <img src="@($"https://image.tmdb.org/t/p/original{movie.poster_path}")" class="card-img" alt="@movie.title">
-            </div>
-            <div class="col">
-            <h4>@movie.title</h4>
-            <p>@movie.release_date</p>
-            <p>@movie.overview</p>
+                <div class="col">
+                    <h4>@movie.title</h4>
+                    <p>@movie.release_date</p>
+                    <p>@movie.overview</p>
 
-            <div class="fs-4 px-1 mb-3">Comentarios:</div>
-            <textarea class="movie-comment"/>
-            </div>
-        </article>
-    }
-    else
-    {
-        <p>Ups, no se seleccionó ninguna película.</p>
-    }
+                    <div class="fs-4 px-1 mb-3">Comentarios:</div>
+                    <textarea class="movie-comment"></textarea>
+                </div>
+            </article>
+        }
+        else
+        {
+            <p>Ups, no se seleccionó ninguna película.</p>
+        }
     </div>
 </main>
 
@@ -53,6 +46,8 @@
     public string id { get; set; }
 
     private theMovieDb.Result movie;
+    private Random random = new Random();
+
 
     protected override void OnInitialized()
     {
@@ -66,5 +61,10 @@
     private void goHome()
     {
         NavigationManager.NavigateTo("/");
+    }
+
+    private async Task HandleValoration(string e)
+    {
+        await JS.InvokeVoidAsync("localStorage.setItem", "type", e);
     }
 }

@@ -29,6 +29,9 @@ public class theMovieDb
         public bool video { get; set; }
         public double vote_average { get; set; }
         public int vote_count { get; set; }
+        public string? userComment { get; set; }
+        public bool? userValoration { get; set; }
+        public bool? userWatched { get; set; }
     }
 
     public class Movies

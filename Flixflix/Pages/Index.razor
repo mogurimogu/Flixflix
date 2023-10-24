@@ -1,14 +1,31 @@
 ﻿@page "/"
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject theMovieDb theMovieDb
 
 <main class="container-lg">
-    <div class="row">
-        <h1 class="text-center text-uppercase main-title">
-            FlixFlix
-        </h1>
-        <h2 class="text-secondary fs-4 text-center mb-4">
-            Busca, comenta y puntua tus películas favoritas
-        </h2>
-    </div>
     <SearchBar />
-    <MovieGrid />
+    <MovieGrid 
+        movieList="@movieList" 
+        isLoading="@isLoading" 
+        errorMessage="@errorMessage" />
 </main>
+
+
+@code {
+    private theMovieDb.Movies? movieList;
+    private bool isLoading;
+    private string? errorMessage;
+    protected override async Task OnInitializedAsync()
+    {
+        theMovieDb.MoviesListChanged += OnMoviesListChanged;
+    }
+
+    private void OnMoviesListChanged(object sender, EventArgs e)
+    {
+        movieList = theMovieDb.MoviesList;
+        isLoading = theMovieDb.isLoading;
+        errorMessage = theMovieDb.errorMessage;
+        StateHasChanged();
+    }
+
+}

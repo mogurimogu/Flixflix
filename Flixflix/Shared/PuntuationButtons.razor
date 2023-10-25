@@ -1,12 +1,17 @@
 ﻿<div class="btn-group">
-    <button class="btn btn-dark opacity-50" @onclick="() => HandleClick(Dislike)">
+    <button
+        class="btn btn-dark @(movie.userValoration == true || movie.userValoration == null ? "opacity-50" : "text-danger")"
+        @onclick="() => HandleClick(Dislike)">
         <span class="oi oi-thumb-down" aria-hidden="true"></span>
     </button>
-    <button class="btn btn-dark opacity-50" @onclick="() => HandleClick(Like)">
+    <button
+        class="btn btn-dark @(movie.userValoration == false || movie.userValoration == null ? "opacity-50" : "text-success")"
+        @onclick="() => HandleClick(Like)">
         <span class="oi oi-thumb-up" aria-hidden="true"></span>
     </button>
 </div>
-<button class="btn btn-dark opacity-50" @onclick="() => HandleClick(Watched)">
+<button class="btn btn-dark @(movie.userWatched == false ? "opacity-50" : "text-primary")"
+    @onclick="() => HandleClick(Watched)">
     <span class="oi oi-eye" aria-hidden="true"></span>
 </button>
 
@@ -22,4 +27,5 @@
 
     [Parameter]
     public EventCallback<string> HandleValoration { get; set; }
+
 }

@@ -31,7 +31,7 @@ public class theMovieDb
         public int vote_count { get; set; }
         public string? userComment { get; set; }
         public bool? userValoration { get; set; }
-        public bool? userWatched { get; set; }
+        public bool? userWatched { get; set; } = false;
     }
 
     public class Movies

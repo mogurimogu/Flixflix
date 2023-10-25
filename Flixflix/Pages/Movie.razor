@@ -4,12 +4,15 @@
 @inject theMovieDb theMovieDb
 @layout MovieLayout
 
-<main class="movie-bg"
-      style="background-image: url(@($"https://image.tmdb.org/t/p/original{movie.backdrop_path}"));
-      background-color: rgb(@random.Next(255), @random.Next(255), @random.Next(255)) ">
-    <div class="overlay p-3 container">
-        @if (movie != null)
-        {
+@using System.Text.Json;
+
+@if (movie.title != null)
+{
+    <main class="movie-bg" style="background-image: url(@($"https://image.tmdb.org/t/p/original{movie.backdrop_path}"));
+          background-color: rgb(@random.Next(255), @random.Next(255), @random.Next(255)) ">
+        <div class="overlay p-3 container">
+
+
             <article class="movie-info-card row">
                 <div class="mb-3 d-flex justify-content-between">
                     <div>
@@ -22,7 +25,8 @@
                     </div>
                 </div>
                 <div class="col-md-5 mb-3">
-                    <img src="@($"https://image.tmdb.org/t/p/original{movie.poster_path}")" class="card-img" alt="@movie.title">
+                    <img src="@($"https://image.tmdb.org/t/p/original{movie.poster_path}")" class="card-img"
+                        alt="@movie.title">
                 </div>
                 <div class="col">
                     <h4>@movie.title</h4>
@@ -33,28 +37,55 @@
                     <textarea class="movie-comment"></textarea>
                 </div>
             </article>
-        }
-        else
-        {
-            <p>Ups, no se seleccionó ninguna película.</p>
-        }
-    </div>
-</main>
+        </div>
+    </main>
+}
+else
+{
+    <p>Loading...</p>
+}
+
 
 @code {
     [Parameter]
     public string id { get; set; }
+    private theMovieDb.Result movie = new theMovieDb.Result();
 
-    private theMovieDb.Result movie;
+    private List<theMovieDb.Result> MoviesVault = new List<theMovieDb.Result>();
+
     private Random random = new Random();
 
-
-    protected override void OnInitialized()
+    private async Task getStoredMovies()
     {
-        if (!string.IsNullOrEmpty(id) && theMovieDb.MoviesList != null)
+        var movieStore = await JS.InvokeAsync<string>("localStorage.getItem", "storedMovies");
+        if (movieStore != null)
         {
-            int movieId = int.Parse(id);
-            movie = theMovieDb.MoviesList.results.FirstOrDefault(m => m.id == movieId);
+            MoviesVault = JsonSerializer.Deserialize<List<theMovieDb.Result>>(movieStore);
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        int movieId = int.Parse(id);
+        await getStoredMovies();
+
+        var cachedMovie = MoviesVault?.FirstOrDefault(m => m.id == movieId);
+        var movieFromList = theMovieDb?.MoviesList?.results?.FirstOrDefault(m => m.id == movieId);
+
+        if (cachedMovie != null)
+        {
+            movie = cachedMovie;
+            Console.WriteLine("Cargado desde la caché");
+        }
+        else if (movieFromList != null)
+        {
+            movie = movieFromList;
+            Console.WriteLine("Cargado desde la lista");
+        }
+        else
+        {
+            goHome();
         }
     }
 
@@ -65,6 +96,44 @@
 
     private async Task HandleValoration(string e)
     {
-        await JS.InvokeVoidAsync("localStorage.setItem", "type", e);
+        //Comprueba que elemento es el que se le pasa y hace una acción u otra
+        if (e == "like")
+        {
+            var valoration = movie.userValoration != true ? movie.userValoration = true : movie.userValoration = null;
+            movie.userValoration = valoration;
+        }
+        if (e == "dislike")
+        {
+            var valoration = movie.userValoration != false ? movie.userValoration = false : movie.userValoration = null;
+            movie.userValoration = valoration;
+        }
+        if (e == "watched")
+        {
+            movie.userWatched = !movie.userWatched;
+        }
+
+        Console.WriteLine(e);
+
+
+        //actualiza la lista de peliculas almacenadas
+        await getStoredMovies();
+
+        var cachedMovie = MoviesVault.FirstOrDefault(m => m.id == movie.id);
+
+        if (cachedMovie != null)
+        {
+            cachedMovie.userValoration = movie.userValoration;
+            cachedMovie.userWatched = movie.userWatched;
+            Console.WriteLine("Preferencias actualizadas");
+        }
+        else
+        {
+            MoviesVault.Add(movie);
+            Console.WriteLine("Preferencias almacenadas");
+        }
+
+        string storedMoviesJson = JsonSerializer.Serialize(MoviesVault);
+
+        await JS.InvokeVoidAsync("localStorage.setItem", "storedMovies", storedMoviesJson);
     }
 }

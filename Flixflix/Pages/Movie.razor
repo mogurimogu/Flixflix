@@ -34,7 +34,7 @@
                     <p>@movie.overview</p>
 
                     <div class="fs-4 px-1 mb-3">Comentarios:</div>
-                    <textarea class="movie-comment"></textarea>
+                    <textarea class="movie-comment" @bind="movie.userComment" @oninput="OnInput" />
                 </div>
             </article>
         </div>
@@ -50,6 +50,7 @@ else
     [Parameter]
     public string id { get; set; }
     private theMovieDb.Result movie = new theMovieDb.Result();
+    private Timer debounceTimer;
 
     private List<theMovieDb.Result> MoviesVault = new List<theMovieDb.Result>();
 
@@ -112,10 +113,6 @@ else
             movie.userWatched = !movie.userWatched;
         }
 
-        Console.WriteLine(e);
-
-
-        //actualiza la lista de peliculas almacenadas
         await getStoredMovies();
 
         var cachedMovie = MoviesVault.FirstOrDefault(m => m.id == movie.id);
@@ -136,4 +133,34 @@ else
 
         await JS.InvokeVoidAsync("localStorage.setItem", "storedMovies", storedMoviesJson);
     }
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        movie.userComment = e.Value.ToString();
+        if (debounceTimer != null)
+        {
+            debounceTimer.Dispose();
+        }
+        debounceTimer = new Timer(HandleComment, null, 100, Timeout.Infinite);
+    }
+
+    private async void HandleComment(object state)
+    {
+        var cachedMovie = MoviesVault.FirstOrDefault(m => m.id == movie.id);
+        if (cachedMovie != null)
+        {
+            cachedMovie.userComment = movie.userComment;
+            Console.WriteLine("Preferencias actualizadas");
+        }
+        else
+        {
+            MoviesVault.Add(movie);
+            Console.WriteLine("Preferencias almacenadas");
+        }
+        string storedMoviesJson = JsonSerializer.Serialize(MoviesVault);
+
+        await JS.InvokeVoidAsync("localStorage.setItem", "storedMovies", storedMoviesJson);
+    }
+
+
 }

@@ -1,7 +1,25 @@
 ﻿@page "/my-list"
+@inject IJSRuntime JS
+@using System.Text.Json;
 
-<h3>MyList</h3>
+
+<div class="container">
+    <MovieGrid movieList="MoviesVault"/>
+</div>
 
 @code {
+    private List<theMovieDb.Result> MoviesVault = new List<theMovieDb.Result>();
+    private async Task getStoredMovies()
+    {
+        var movieStore = await JS.InvokeAsync<string>("localStorage.getItem", "storedMovies");
+        if (movieStore != null)
+        {
+            MoviesVault = JsonSerializer.Deserialize<List<theMovieDb.Result>>(movieStore);
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await getStoredMovies();
+    }
 
 }

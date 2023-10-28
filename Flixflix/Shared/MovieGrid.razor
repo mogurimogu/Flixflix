@@ -16,10 +16,10 @@
 }
 else if (movieList != null)
 {
-    if (movieList.results.Count > 0)
+    if (movieList.Count > 0)
     {
         <ul class="movies-grid px-3">
-            @foreach (var movie in movieList.results)
+            @foreach (var movie in movieList)
             {
                 <li>
                     <MovieCard movie="@movie" />
@@ -30,7 +30,7 @@ else if (movieList != null)
     else
     {
         <div class=" alert alert-warning" role="alert">
-            No hubo resultados para esta búsqueda.
+            No se encontraron películas.
         </div>
     }
 }
@@ -38,7 +38,7 @@ else if (movieList != null)
 
 @code {
     [Parameter]
-    public theMovieDb.Movies? movieList { get; set; }
+    public List<theMovieDb.Result> movieList { get; set; }
     [ParameterAttribute]
     public bool isLoading { get; set; }
     [Parameter]
